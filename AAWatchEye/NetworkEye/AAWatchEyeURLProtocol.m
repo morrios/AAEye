@@ -101,6 +101,7 @@ static NSString * const hasInitKey = @"AAWatchEyeURLProtocolKey";
     
     if (xmlString && xmlString.length>0) {
         ne_HTTPModel.receiveJSONData = xmlString;//example http://webservice.webxml.com.cn/webservices/qqOnlineWebService.asmx/qqCheckOnline?qqCode=2121
+
     }
     double flowCount=[[[NSUserDefaults standardUserDefaults] objectForKey:@"flowCount"] doubleValue];
     if (!flowCount) {

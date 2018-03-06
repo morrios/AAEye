@@ -7,6 +7,7 @@
 //
 
 #import "NEHTTPModel.h"
+#import "merchant-Swift.h"
 
 @implementation NEHTTPModel
 @synthesize ne_request,ne_response;
@@ -55,11 +56,18 @@
             self.requestAllHTTPHeaderFields=[self.requestAllHTTPHeaderFields substringFromIndex:6];
         }
     }
+    //        NSData *data = [ne_HTTPModel.ne_request.HTTPBodyStream readfully];
 
     if ([ne_request HTTPBody].length>512) {
         self.requestHTTPBody=@"requestHTTPBody too long";
     }else{
-        self.requestHTTPBody=[[NSString alloc] initWithData:[ne_request HTTPBody] encoding:NSUTF8StringEncoding];
+        if (![ne_request HTTPBody]) {
+            NSData *data = [ne_request.HTTPBodyStream readfully];
+            self.requestHTTPBody = [self dataToReadStr:data];
+        }else{
+            self.requestHTTPBody=[[NSString alloc] initWithData:[ne_request HTTPBody] encoding:NSUTF8StringEncoding];
+
+        }
     }
     if (self.requestHTTPBody.length>1) {
         if ([[self.requestHTTPBody substringFromIndex:self.requestHTTPBody.length-1] isEqualToString:@"\n"]) {
@@ -67,6 +75,59 @@
         }
     }
     
+}
+- (NSString *)dataToReadStr:(NSData*)data{
+    if (data == nil) {
+        
+        return nil;
+    }
+    NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    if (dict) {
+        NSData *newdata=[NSJSONSerialization dataWithJSONObject:dict
+                                                        options:NSJSONWritingPrettyPrinted
+                                                          error:nil];
+        
+        
+        
+        NSString *str=[[NSString alloc] initWithData:newdata encoding:NSUTF8StringEncoding];
+        return str;
+    }else{
+        NSString *str=[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        NSArray *array = [str componentsSeparatedByString:@"&"];
+        NSString *newStr = @"{";
+        for (int i=0 ; i<array.count; i++) {
+            NSString *sub = [self strFormat:array[i]];
+            if (i!=(array.count-1)) {
+                sub = [NSString stringWithFormat:@"%@,",sub];
+            }
+            newStr = [NSString stringWithFormat:@"%@%@",newStr,sub];
+        }
+        newStr = [NSString stringWithFormat:@"%@}",newStr];
+
+        
+        NSData *jsonData = [newStr dataUsingEncoding:NSUTF8StringEncoding];
+        NSError *err;
+        NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:jsonData
+                                                            options:NSJSONReadingMutableContainers
+                                                              error:&err];
+        NSData *newdata=[NSJSONSerialization dataWithJSONObject:dict
+                                                        options:NSJSONWritingPrettyPrinted
+                                                          error:nil];
+        
+        NSString *reslut=[[NSString alloc] initWithData:newdata encoding:NSUTF8StringEncoding];
+        
+        return reslut;
+    }
+    return nil;
+}
+
+- (NSString *)strFormat:(NSString *)str{
+    NSArray *array = [str componentsSeparatedByString:@"="];
+    NSString *jsonStr = @"";
+    if (array.count==2) {
+        jsonStr = [NSString stringWithFormat:@"\"%@\":\"%@\"",array[0],array[1]];
+    }
+    return jsonStr;
 }
 
 - (void)setNe_response:(NSHTTPURLResponse *)ne_response_new {

@@ -24,10 +24,26 @@ extension UIView {
         return self.frame.origin.y + self.frame.size.height
     }
     var width: CGFloat {
-        return self.frame.size.width
+        get {
+            return self.frame.size.width
+        }
+        set {
+            var frame = self.frame
+            frame.size.width = newValue
+            self.frame = frame
+        }
     }
     var height: CGFloat {
-        return self.frame.size.height
+        
+        get {
+            return self.frame.size.height
+        }
+        set {
+            var frame = self.frame
+            frame.size.height = newValue
+            self.frame = frame
+        }
+        
     }
     var centerX: CGFloat {
         get {

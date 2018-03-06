@@ -28,7 +28,6 @@
         }
         
         if ([type isEqualToString: @"NSString"]||[type isEqualToString: @"d"]||[type isEqualToString: @"q"]) {
-            NSLog(@"key = %@, type = %@", key, type);
             NSMutableDictionary *dict = [NSMutableDictionary dictionary];
             [dict setObject:key forKey:@"key"];
             [dict setObject:type forKey:@"type"];
@@ -57,7 +56,6 @@
         }else if ([dict[@"type"] isEqualToString: @"q"]) {
             tmp = [tmp stringByAppendingString:@" int"];
         }else{
-            NSLog(@"else  key = %@, type = %@ ", dict[@"key"], dict[@"type"]);
             tmp = @"";
         }
         
